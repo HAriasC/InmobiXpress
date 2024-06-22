@@ -1,15 +1,19 @@
 [versions]
-agp = "8.4.1"
-kotlin = "1.9.0"
+agp = "8.4.2"
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-lifecycleRuntimeKtx = "2.8.0"
+lifecycleRuntimeKtx = "2.8.2"
 activityCompose = "1.9.0"
-composeBom = "2024.05.00"
+composeBom = "2024.06.00"
 coreSplashScreen = "1.0.1"
-navigationCompose = "2.7.7"
+navigationCompose = "2.8.0-beta03"
+serialization = "1.6.3"
+composeCompiler = "1.5.3"
+maps = "4.4.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,8 +33,17 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashScreen" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+kotlin-gradle-plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0"
+kotlin-serialization-plugin = { module = "org.jetbrains.kotlinx:kotlinx-serialization", version.ref = "kotlin" }
+google_maps_compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps" }
+google_maps_compose_utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "maps" }
+google_maps_compose_widgets = { module = "com.google.maps.android:maps-compose-widgets", version.ref = "maps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

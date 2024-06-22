@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
@@ -39,9 +41,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -63,6 +62,10 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.material.icons)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.google.maps.compose)
+    implementation(libs.google.maps.compose.utils)
+    implementation(libs.google.maps.compose.widgets)
     //Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
