@@ -1,6 +1,5 @@
 package com.inmobixpress.inmobixpress.ui.navigation
 
-import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import kotlinx.serialization.Serializable
 
 object NavScreen {

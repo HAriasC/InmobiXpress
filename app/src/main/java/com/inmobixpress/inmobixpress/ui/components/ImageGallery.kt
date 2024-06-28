@@ -45,7 +45,7 @@ fun ImageGallery(imageList: List<Int>) {
             ) {
                 repeat(pagerState.pageCount) { iteration ->
                     val color =
-                        if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                        if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
                     Box(
                         modifier = Modifier
                             .padding(2.dp)
