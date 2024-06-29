@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -66,6 +68,9 @@ dependencies {
     implementation(libs.google.maps.compose)
     implementation(libs.google.maps.compose.utils)
     implementation(libs.google.maps.compose.widgets)
+    implementation(libs.androidx.compose.livedata)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     //Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

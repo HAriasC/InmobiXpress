@@ -9,14 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.inmobixpress.inmobixpress.MainViewModel
 import com.inmobixpress.inmobixpress.ui.components.BottomBar
 import com.inmobixpress.inmobixpress.ui.navigation.MainNavigation
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController()) {
-
+fun MainScreen(viewModel: MainViewModel, navController: NavHostController = rememberNavController()) {
     Scaffold(
-        bottomBar = { BottomBar(navController = navController, true) },
+        bottomBar = { BottomBar(viewModel, navController = navController) },
 
     ) { innerPadding ->
         Surface(
@@ -24,7 +24,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            MainNavigation(navController = navController)
+            MainNavigation(viewModel = viewModel, navController = navController)
         }
     }
 }
@@ -32,5 +32,5 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    MainScreen(MainViewModel())
 }

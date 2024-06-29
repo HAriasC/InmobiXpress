@@ -151,40 +151,7 @@ fun PropertyDetail(property: PropertyItem) {
             modifier = Modifier.padding(vertical = 8.dp)
         )
         Row(modifier = Modifier.padding(top = 8.dp)) {
-            OutlinedIconButton(onClick = {
 
-            }) {
-                Icon(
-                    imageVector = Icons.Outlined.Phone,
-                    contentDescription = "",
-                )
-            }
-            Button(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .weight(1.0.toFloat()),
-                onClick = {
-
-                }) {
-                Icon(
-                    imageVector = Icons.Outlined.Whatsapp,
-                    contentDescription = "",
-                )
-                Text(modifier = Modifier.padding(start = 4.dp), text = "WhatsApp")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .weight(1.0.toFloat()),
-                onClick = {
-
-                }) {
-                Icon(
-                    imageVector = Icons.Outlined.Email,
-                    contentDescription = "",
-                )
-                Text(modifier = Modifier.padding(start = 4.dp), text = "Contactar")
-            }
         }
     }
 }
