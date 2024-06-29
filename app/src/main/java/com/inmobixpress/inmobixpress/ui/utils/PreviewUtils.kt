@@ -1,5 +1,9 @@
 package com.inmobixpress.inmobixpress.ui.utils
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MiscellaneousServices
+import androidx.compose.material.icons.outlined.Streetview
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.inmobixpress.inmobixpress.R
 import com.inmobixpress.inmobixpress.ui.model.Country
 import com.inmobixpress.inmobixpress.ui.model.Department
@@ -9,6 +13,8 @@ import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.model.PropertyType
 import com.inmobixpress.inmobixpress.ui.model.Proprietor
 import com.inmobixpress.inmobixpress.ui.model.Province
+import com.inmobixpress.inmobixpress.ui.model.TabItem
+import com.inmobixpress.inmobixpress.ui.screens.DetailScreen
 
 fun previewListProperty() = listOf(
     PropertyItem(
@@ -82,4 +88,10 @@ fun previewListProperty() = listOf(
         location = Location(id = 0, latitude = -12.131138, longitude = -77.023373, altitude = 1.0),
         images = listOf(R.drawable.image2, R.drawable.image1)
     )
+)
+
+fun previewDetailTabList(propertyItem: PropertyItem) = listOf(
+    TabItem(title = "Detalle", icon = propertyItem.type.icon) { DetailScreen(propertyItem) },
+    TabItem(title = "Vecindario", icon = Icons.Outlined.Streetview) {},
+    TabItem(title = "Servicios", icon = Icons.Outlined.MiscellaneousServices) {}
 )

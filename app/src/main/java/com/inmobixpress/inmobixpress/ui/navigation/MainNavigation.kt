@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.inmobixpress.inmobixpress.ui.screens.DetailScreen
+import com.inmobixpress.inmobixpress.ui.screens.DetailContainerScreen
 import com.inmobixpress.inmobixpress.ui.screens.HomeScreen
 import com.inmobixpress.inmobixpress.ui.screens.LiveScreen
 import com.inmobixpress.inmobixpress.ui.screens.MapScreen
@@ -49,7 +49,7 @@ fun MainNavigation(
             }
             composable<NavScreen.Detail> { backStackEntry ->
                 val args = backStackEntry.toRoute<NavScreen.Detail>()
-                DetailScreen(
+                DetailContainerScreen(
                     id = args.id,
                     onNavigateBack = {
                         navController.popBackStack()
