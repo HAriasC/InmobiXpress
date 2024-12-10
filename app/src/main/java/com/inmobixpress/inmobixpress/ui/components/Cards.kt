@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,11 +42,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.utils.bathroomFormat
+import com.inmobixpress.inmobixpress.ui.utils.callProprietor
 import com.inmobixpress.inmobixpress.ui.utils.previewListProperty
 import com.inmobixpress.inmobixpress.ui.utils.priceFormat
 
 @Composable
-fun ItemCard(property: PropertyItem, onItemClick: (property: PropertyItem) -> Unit) {
+fun ItemCard(
+    property: PropertyItem,
+    onItemClick: (property: PropertyItem) -> Unit,
+    onWhatsAppClick: (property: PropertyItem) -> Unit,
+    onContactClick: (property: PropertyItem) -> Unit
+) {
+    val context = LocalContext.current
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +85,10 @@ fun ItemCard(property: PropertyItem, onItemClick: (property: PropertyItem) -> Un
                 }
             }
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-                Text(text = "S/${property.price.toString().priceFormat()}", fontWeight = FontWeight.Medium)
+                Text(
+                    text = "S/${property.price.toString().priceFormat()}",
+                    fontWeight = FontWeight.Medium
+                )
                 Text(
                     text = "S/${property.maintenance} Mantenimiento",
                     fontSize = 11.sp,
@@ -171,7 +182,7 @@ fun ItemCard(property: PropertyItem, onItemClick: (property: PropertyItem) -> Un
                 )
                 Row(modifier = Modifier.padding(top = 8.dp)) {
                     OutlinedIconButton(onClick = {
-
+                        context.callProprietor(property)
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Phone,
@@ -183,8 +194,9 @@ fun ItemCard(property: PropertyItem, onItemClick: (property: PropertyItem) -> Un
                             .padding(start = 4.dp)
                             .weight(1.0.toFloat()),
                         onClick = {
-
-                        }) {
+                            onWhatsAppClick(property)
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Whatsapp,
                             contentDescription = "",
@@ -196,8 +208,9 @@ fun ItemCard(property: PropertyItem, onItemClick: (property: PropertyItem) -> Un
                             .padding(start = 8.dp)
                             .weight(1.0.toFloat()),
                         onClick = {
-
-                        }) {
+                            onContactClick(property)
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Email,
                             contentDescription = "",
@@ -207,12 +220,15 @@ fun ItemCard(property: PropertyItem, onItemClick: (property: PropertyItem) -> Un
                 }
             }
         }
-
     }
 }
 
 @Preview
 @Composable
 fun ItemCardPreview() {
-    ItemCard(property = previewListProperty()[0], onItemClick = { })
+    ItemCard(
+        property = previewListProperty()[0],
+        onItemClick = { },
+        onWhatsAppClick = { },
+        onContactClick = { })
 }

@@ -1,11 +1,13 @@
 package com.inmobixpress.inmobixpress.ui.model
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data class Location(
     val id: Int,
     val latitude: Double,
     val longitude: Double,
-    val altitude: Double
-)
+    val altitude: Double,
+    val altitudeBase: Double
+) : Parcelable

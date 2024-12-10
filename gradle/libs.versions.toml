@@ -1,23 +1,41 @@
 [versions]
-agp = "8.5.0"
-kotlin = "2.0.0"
-ksp = "2.0.0-1.0.21"
-coreKtx = "1.13.1"
+agp = "8.7.3"
+kotlin = "2.1.0"
+ksp = "2.1.0-1.0.29"
+coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.2"
-activityCompose = "1.9.0"
-compose = "1.3.0-beta04"
-composeBom = "2024.06.00"
-livedata = "1.6.8"
+lifecycleRuntimeKtx = "2.8.7"
+activityCompose = "1.9.3"
+viewbinding = "1.7.5"
+compose = "1.3.1"
+composeBom = "2024.11.00"
+livedata = "1.7.5"
 coreSplashScreen = "1.0.1"
-navigationCompose = "2.8.0-beta04"
-serialization = "1.6.3"
+navigationCompose = "2.8.4"
+serialization = "1.7.3"
+datetime = "0.6.0-RC.2"
 composeCompiler = "1.5.3"
 maps = "4.4.1"
-hilt = "2.51"
-hiltNavigationCompose ="1.2.0"
+hilt = "2.51.1"
+hiltNavigationCompose = "1.2.0"
+lottie = "6.5.2"
+cloudy = "0.2.3"
+places = "4.1.0"
+base = "18.5.0"
+identity = "18.1.0"
+auth = "21.2.0"
+location = "21.3.0"
+gms = "4.4.2"
+arcore = "1.46.0"
+sceneview = "2.2.1"
+javagl = "0.4.0"
+permissions = "0.35.0-alpha"
+sceneformUx = "1.17.1"
+ktor = "3.0.0"
+firebaseMessaging = "24.1.0"
+storage = "21.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,8 +45,9 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-compose-livedata ={group="androidx.compose.runtime", name = "runtime-livedata", version.ref = "livedata"}
+androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "livedata" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-viewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding", version.ref = "viewbinding" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
@@ -39,21 +58,46 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlin-gradle-plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0"
 kotlin-serialization-plugin = { module = "org.jetbrains.kotlinx:kotlinx-serialization", version.ref = "kotlin" }
 google_maps_compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps" }
 google_maps_compose_utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "maps" }
 google_maps_compose_widgets = { module = "com.google.maps.android:maps-compose-widgets", version.ref = "maps" }
-androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+compose-cloudy = { module = "com.github.skydoves:cloudy", version.ref = "cloudy" }
+google-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "auth" }
+play-services-auth-phone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version.ref = "identity" }
+play-services-base = { group = "com.google.android.gms", name = "play-services-base", version.ref = "base" }
+play-services-identity = { group = "com.google.android.gms", name = "play-services-identity", version.ref = "identity" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "location" }
+google-ar-core = { group = "com.google.ar", name = "core", version.ref = "arcore" }
+sceneform-ux = { group = "com.google.ar.sceneform.ux", name = "sceneform-ux", version.ref = "sceneformUx" }
+arsceneview = { group = "io.github.sceneview", name = "arsceneview", version.ref = "sceneview" }
+javagl-obj = { group = "de.javagl", name = "obj", version.ref = "javagl" }
+google-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "permissions" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization-jvm", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "storage"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlin"  }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
+google-services = { id = "com.google.gms.google-services", version.ref = "gms" }

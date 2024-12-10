@@ -13,3 +13,8 @@ fun String.bathroomFormat(): String {
         return this
     }
 }
+
+fun String.formatNavRoute(): String {
+    val value = this.replace("$", ".")
+    return if (value.contains("?")) value.split("?")[0] else value
+}

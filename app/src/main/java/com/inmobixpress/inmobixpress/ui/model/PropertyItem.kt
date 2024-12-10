@@ -1,8 +1,9 @@
 package com.inmobixpress.inmobixpress.ui.model
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data class PropertyItem(
     val id: Int,
     val price: Int,
@@ -16,7 +17,8 @@ data class PropertyItem(
     val garages: Int,
     val type: PropertyType,
     val proprietor: Proprietor,
+    val intermediary: Intermediary,
     val district: District,
     val location: Location,
     val images: List<Int>
-)
+) : Parcelable

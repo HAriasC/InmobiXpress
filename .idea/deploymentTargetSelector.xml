@@ -4,16 +4,28 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-28T23:03:38.412091Z">
+        <DropdownSelection timestamp="2024-08-02T21:29:37.657704Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/harias/.android/avd/Pixel_3a_API_34_extension_level_7_x86_64.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/harias/.android/avd/Pixel_3a_API_34.avd" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="ItemCard">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="SegmentedButtonMultiSelectSample">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="CustomTabSample">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="SectionTabsPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ContactTabsPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

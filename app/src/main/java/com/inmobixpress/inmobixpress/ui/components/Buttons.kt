@@ -1,6 +1,7 @@
 package com.inmobixpress.inmobixpress.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -14,9 +15,9 @@ fun SearchFloatingActionButton(onNavigateToSearch: () -> Unit) {
     FloatingActionButton(
         onClick = onNavigateToSearch,
         containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = Color.White
+        contentColor = MaterialTheme.colorScheme.surfaceDim
     ) {
-        Icon(imageVector = Icons.Filled.Search, contentDescription = "Buscar")
+        Icon(imageVector = Icons.Filled.FilterList, contentDescription = "Filtro")
     }
 }
 

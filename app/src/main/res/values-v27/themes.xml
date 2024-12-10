@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.InmobiXpressApp.NoActionBar" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowLayoutInDisplayCutoutMode">
+            shortEdges <!-- default, shortEdges, or never -->
+        </item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,34 +29,43 @@ import com.inmobixpress.inmobixpress.ui.utils.previewListProperty
 
 @Composable
 fun ImageGallery(imageList: List<Int>) {
-    Box(modifier = Modifier
-        .wrapContentHeight()
-        .background(color = Color.Black)) {
-        val pagerState = rememberPagerState {
-            imageList.size
-        }
-        Column {
-            HorizontalPager(state = pagerState, beyondViewportPageCount = 2) { page ->
-                ImagePagerItem(imageList[page])
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Box(modifier = Modifier
+            .wrapContentHeight()
+            .background(color = Color.Black)) {
+            val pagerState = rememberPagerState {
+                imageList.size
             }
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                repeat(pagerState.pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
-                    Box(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(color)
-                            .width(16.dp)
-                            .height(8.dp)
-                    )
+            Column {
+                HorizontalPager(state = pagerState, beyondViewportPageCount = 2) { page ->
+                    ImagePagerItem(imageList[page])
+                }
+                Row(
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    repeat(pagerState.pageCount) { iteration ->
+                        val color =
+                            if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
+                        Box(
+                            modifier = Modifier
+                                .padding(2.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(color)
+                                .width(16.dp)
+                                .height(8.dp)
+                        )
+                    }
                 }
             }
         }

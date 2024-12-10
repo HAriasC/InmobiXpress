@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.House
 import androidx.compose.material.icons.outlined.Store
+import androidx.compose.material.icons.outlined.WorkOutline
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.inmobixpress.inmobixpress.R
 
@@ -22,5 +23,9 @@ enum class PropertyType(
     SHOP(
         typeId = R.string.item_shop,
         icon = Icons.Outlined.Store
+    ),
+    OFFICE(
+        typeId = R.string.item_office,
+        icon = Icons.Outlined.WorkOutline
     )
 }

@@ -1,13 +1,14 @@
 package com.inmobixpress.inmobixpress.ui.model
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data class Proprietor(
     val id: Int,
     val name: String,
     val lastName: String,
     val motherLastName: String,
-    val phone : Int,
+    val phone : String,
     val email: String
-)
+) : Parcelable

@@ -1,10 +1,11 @@
 package com.inmobixpress.inmobixpress.ui.model
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data class Province(
     val id: Int,
     val name: String,
     val department: Department
-)
+) : Parcelable

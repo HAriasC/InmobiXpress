@@ -14,7 +14,7 @@ object NavScreen {
     object Live
 
     @Serializable
-    object Search
+    data class Search(val id: Int = 0)
 
     @Serializable
     object Profile
