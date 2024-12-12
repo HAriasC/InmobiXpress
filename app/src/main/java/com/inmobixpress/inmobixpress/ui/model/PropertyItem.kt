@@ -20,5 +20,5 @@ data class PropertyItem(
     val intermediary: Intermediary,
     val district: District,
     val location: Location,
-    val images: List<Int>
+    val images: List<String>
 ) : Parcelable

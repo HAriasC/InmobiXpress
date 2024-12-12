@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.compose.cloudy)
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
+    implementation(libs.coil.compose)
     implementation(libs.google.places)
     implementation(libs.play.services.base)
     implementation(libs.play.services.identity)

@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.ar.core.Session
 import com.google.maps.android.SphericalUtil
 import com.inmobixpress.inmobixpress.data.network.model.Device
+import com.inmobixpress.inmobixpress.data.network.model.Image
 import com.inmobixpress.inmobixpress.data.network.model.Property
 import com.inmobixpress.inmobixpress.data.network.model.PropertyHasOfferType
 import com.inmobixpress.inmobixpress.repository.PropertyRepository
@@ -23,7 +24,6 @@ import com.inmobixpress.inmobixpress.ui.model.FilterType
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.model.ServiceMarker
 import com.inmobixpress.inmobixpress.ui.model.UIState
-import com.inmobixpress.inmobixpress.ui.utils.previewDistricts
 import com.inmobixpress.inmobixpress.ui.utils.today
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,12 +31,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -189,6 +187,9 @@ class MainViewModel @Inject constructor(
 
     private val _devices = MutableStateFlow<UIState<List<Device>>>(UIState.Loading())
     val devices = _devices.asStateFlow()
+
+    private val _images = MutableStateFlow<UIState<List<Image>>>(UIState.Loading())
+    val images = _images.asStateFlow()
 
     private val _propertyItems = MutableLiveData<Map<Int, PropertyItem>>()
     val propertyItems: LiveData<Map<Int, PropertyItem>> = _propertyItems
@@ -489,6 +490,22 @@ class MainViewModel @Inject constructor(
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000),
                     initialValue = UIState.Loading()
                 ).collect { _devices.value = it }
+        }
+    }
+
+    fun loadImages() {
+        viewModelScope.launch {
+            repository.loadImages()
+                .map { it }
+                .flowOn(dispatcher)
+                .catch {
+                    _images.value = UIState.Error(error = it)
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000),
+                    initialValue = UIState.Loading()
+                ).collect { _images.value = it }
         }
     }
 

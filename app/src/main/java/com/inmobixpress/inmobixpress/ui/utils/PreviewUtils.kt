@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
-import com.inmobixpress.inmobixpress.R
 import com.inmobixpress.inmobixpress.ui.model.Country
 import com.inmobixpress.inmobixpress.ui.model.Department
 import com.inmobixpress.inmobixpress.ui.model.District
@@ -87,7 +86,7 @@ fun previewListProperty() = listOf(
             altitude = 1.0,
             altitudeBase = 0.0
         ),
-        images = listOf(R.drawable.image1, R.drawable.image2)
+        images = emptyList()
     ), PropertyItem(
         id = 1,
         price = 2900,
@@ -143,7 +142,7 @@ fun previewListProperty() = listOf(
             altitude = 1.0,
             altitudeBase = 0.0
         ),
-        images = listOf(R.drawable.image2, R.drawable.image1)
+        images = emptyList()
     ), PropertyItem(
         id = 2,
         price = 7000,
@@ -199,7 +198,7 @@ fun previewListProperty() = listOf(
             altitude = 1.0,
             altitudeBase = 0.0
         ),
-        images = listOf(R.drawable.image1, R.drawable.image2)
+        images = emptyList()
     ), PropertyItem(
         id = 3,
         price = 2900,
@@ -255,7 +254,7 @@ fun previewListProperty() = listOf(
             altitude = 1.0,
             altitudeBase = 0.0
         ),
-        images = listOf(R.drawable.image2, R.drawable.image1)
+        images = emptyList()
     ), PropertyItem(
         id = 4,
         price = 7000,
@@ -311,7 +310,7 @@ fun previewListProperty() = listOf(
             altitude = 1.0,
             altitudeBase = 0.0
         ),
-        images = listOf(R.drawable.image1, R.drawable.image2)
+        images = emptyList()
     ), PropertyItem(
         id = 4,
         price = 2000,
@@ -367,7 +366,7 @@ fun previewListProperty() = listOf(
             altitude = 1.0,
             altitudeBase = 0.0
         ),
-        images = listOf(R.drawable.image2, R.drawable.image1)
+        images = emptyList()
     )
 )
 

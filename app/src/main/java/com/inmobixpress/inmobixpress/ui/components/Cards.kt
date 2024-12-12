@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.SquareFoot
 import androidx.compose.material.icons.outlined.Whatsapp
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,11 +36,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
+import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.utils.bathroomFormat
 import com.inmobixpress.inmobixpress.ui.utils.callProprietor
@@ -54,6 +61,13 @@ fun ItemCard(
     onContactClick: (property: PropertyItem) -> Unit
 ) {
     val context = LocalContext.current
+    val sizeResolver = rememberConstraintsSizeResolver()
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(data = property.images[0])
+            .size(resolver = sizeResolver)
+            .build(),
+    )
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,9 +83,18 @@ fun ItemCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    painter = painterResource(id = property.images[0]),
+                    painter = painter,
                     contentDescription = "",
                     contentScale = ContentScale.Crop
+                )
+                AsyncImage(
+                    model = ImageRequest.Builder(context = context)
+                        .data(data = property.images[0])
+                        .crossfade(enable = true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().height(height = 200.dp)
                 )
                 OutlinedIconButton(
                     modifier = Modifier

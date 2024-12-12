@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.inmobixpress.inmobixpress.R
 import com.inmobixpress.inmobixpress.data.network.implement.PropertyServiceImpl
 import com.inmobixpress.inmobixpress.data.network.model.Device
+import com.inmobixpress.inmobixpress.data.network.model.Image
 import com.inmobixpress.inmobixpress.data.network.model.Property
 import com.inmobixpress.inmobixpress.data.network.model.PropertyHasOfferType
 import com.inmobixpress.inmobixpress.repository.PropertyRepository
@@ -45,7 +46,6 @@ import com.inmobixpress.inmobixpress.ui.model.PropertyType
 import com.inmobixpress.inmobixpress.ui.model.Proprietor
 import com.inmobixpress.inmobixpress.ui.model.Province
 import com.inmobixpress.inmobixpress.ui.model.UIState
-import com.inmobixpress.inmobixpress.ui.utils.previewListProperty
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 
@@ -63,7 +63,6 @@ fun HomeScreen(
     ) {
         PropertyList(
             viewModel = viewModel,
-            propertyList = previewListProperty(),
             onNavigateToDetail = onNavigateToDetail,
             onNavigateToSearch = onNavigateToSearch
         )
@@ -74,7 +73,6 @@ fun HomeScreen(
 @Composable
 fun PropertyList(
     viewModel: MainViewModel,
-    propertyList: List<PropertyItem>,
     onNavigateToDetail: (id: Int) -> Unit,
     onNavigateToSearch: (id: Int) -> Unit,
 ) {
@@ -82,6 +80,7 @@ fun PropertyList(
     val properties by viewModel.properties.collectAsState()
     val propertiesXOfferType by viewModel.propertiesXOfferType.collectAsState()
     val devices by viewModel.devices.collectAsState()
+    val images by viewModel.images.collectAsState()
     var propertyItemList by remember { mutableStateOf(listOf<PropertyItem>()) }
     var messageError by rememberSaveable { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -91,7 +90,7 @@ fun PropertyList(
 
     Box(Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.padding(top = 85.dp)) {
-            items(propertyItemList, key = { item -> item }) { property ->
+            items(viewModel.foundProperties.toList(), key = { item -> item }) { (key, property) ->
                 ItemCard(
                     property = property,
                     onWhatsAppClick = { item ->
@@ -203,7 +202,37 @@ fun PropertyList(
 
             is UIState.Success -> {
                 LaunchedEffect(key1 = devices) {
-                    if (properties is UIState.Success<List<Property>>) {
+                    viewModel.loadImages()
+                }
+            }
+
+            is UIState.Error -> {
+                LaunchedEffect(key1 = devices) {
+                    messageError = (devices as UIState.Error<List<Device>>).error.toString()
+                    viewModel.onLoadingVisible(visible = false)
+                    viewModel.onErrorDialogVisible(visible = true)
+                }
+            }
+
+            is UIState.None -> {
+                LaunchedEffect(key1 = devices) {
+                    viewModel.onLoadingVisible(visible = true)
+                }
+            }
+        }
+
+        when (images) {
+            is UIState.Loading -> {
+                LaunchedEffect(key1 = images) {
+                    viewModel.onLoadingVisible(visible = true)
+                }
+            }
+
+            is UIState.Success -> {
+                LaunchedEffect(key1 = images) {
+                    if (properties is UIState.Success<List<Property>>
+                        && devices is UIState.Success<List<Device>>
+                    ) {
                         var price = 0
                         val phone = (devices as UIState.Success<List<Device>>).data[0].phone
                         val list = mutableListOf<PropertyItem>()
@@ -288,7 +317,9 @@ fun PropertyList(
                                     altitude = item.location.altitude,
                                     altitudeBase = item.location.altitudeBase
                                 ),
-                                images = listOf(R.drawable.image2, R.drawable.image1)
+                                images = (images as UIState.Success<List<Image>>).data.filter {
+                                    it.property.id == item.id
+                                }.map { it.url }
                             )
                             list.add(property)
                             dist.add(district)
@@ -306,15 +337,16 @@ fun PropertyList(
             }
 
             is UIState.Error -> {
-                LaunchedEffect(key1 = devices) {
-                    messageError = (devices as UIState.Error<List<Device>>).error.toString()
+                LaunchedEffect(key1 = images) {
+                    messageError =
+                        (images as UIState.Error<List<Image>>).error.toString()
                     viewModel.onLoadingVisible(visible = false)
                     viewModel.onErrorDialogVisible(visible = true)
                 }
             }
 
             is UIState.None -> {
-                LaunchedEffect(key1 = devices) {
+                LaunchedEffect(key1 = images) {
                     viewModel.onLoadingVisible(visible = true)
                 }
             }
@@ -333,7 +365,6 @@ fun PropertyListPreview() {
                 )
             )
         ),
-        propertyList = previewListProperty(),
         onNavigateToDetail = { },
         onNavigateToSearch = { }
     )

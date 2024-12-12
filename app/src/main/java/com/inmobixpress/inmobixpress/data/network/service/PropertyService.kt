@@ -4,6 +4,7 @@ import com.inmobixpress.inmobixpress.data.network.model.Country
 import com.inmobixpress.inmobixpress.data.network.model.Department
 import com.inmobixpress.inmobixpress.data.network.model.Device
 import com.inmobixpress.inmobixpress.data.network.model.District
+import com.inmobixpress.inmobixpress.data.network.model.Image
 import com.inmobixpress.inmobixpress.data.network.model.NetworkResult
 import com.inmobixpress.inmobixpress.data.network.model.OfferType
 import com.inmobixpress.inmobixpress.data.network.model.Property
@@ -81,4 +82,10 @@ interface PropertyService {
     fun registerDevice(device: Device): Flow<NetworkResult<String>>
     fun updateDevice(id: Int, device: Device): Flow<NetworkResult<String>>
     fun deleteDevice(id: Int): Flow<NetworkResult<String>>
+
+    fun loadImages(): Flow<NetworkResult<List<Image>>>
+    fun loadImage(id: Int): Flow<NetworkResult<Image>>
+    fun registerImage(image: Image): Flow<NetworkResult<String>>
+    fun updateImage(id: Int, image: Image): Flow<NetworkResult<String>>
+    fun deleteImage(id: Int): Flow<NetworkResult<String>>
 }

@@ -4,6 +4,7 @@ import com.inmobixpress.inmobixpress.data.network.model.Country
 import com.inmobixpress.inmobixpress.data.network.model.Department
 import com.inmobixpress.inmobixpress.data.network.model.Device
 import com.inmobixpress.inmobixpress.data.network.model.District
+import com.inmobixpress.inmobixpress.data.network.model.Image
 import com.inmobixpress.inmobixpress.data.network.model.NetworkResult
 import com.inmobixpress.inmobixpress.data.network.model.OfferType
 import com.inmobixpress.inmobixpress.data.network.model.Property
@@ -455,6 +456,47 @@ class PropertyServiceImpl @Inject constructor(private val httpClient: HttpClient
     override fun deleteDevice(id: Int): Flow<NetworkResult<String>> = flow {
         emit(NetworkResult.Loading())
         val response = httpClient.delete(urlString = "/device/{id?}") {
+            parameter("id", id)
+        }.toResult<String>()
+        emit(response)
+    }
+
+    override fun loadImages(): Flow<NetworkResult<List<Image>>> = flow {
+        emit(NetworkResult.Loading())
+        val response = httpClient.get(urlString = "/image").toResult<List<Image>>()
+        emit(response)
+    }
+
+    override fun loadImage(id: Int): Flow<NetworkResult<Image>> = flow {
+        emit(NetworkResult.Loading())
+        val response = httpClient.get(urlString = "/image/{id?}") {
+            parameter("id", id)
+        }.toResult<Image>()
+        emit(response)
+    }
+
+    override fun registerImage(image: Image): Flow<NetworkResult<String>> = flow {
+        emit(NetworkResult.Loading())
+        val response = httpClient.post(urlString = "/image") {
+            contentType(ContentType.Application.Json)
+            setBody(image)
+        }.toResult<String>()
+        emit(response)
+    }
+
+    override fun updateImage(id: Int, image: Image): Flow<NetworkResult<String>> = flow {
+        emit(NetworkResult.Loading())
+        val response = httpClient.put(urlString = "/image") {
+            parameter("id", id)
+            contentType(ContentType.Application.Json)
+            setBody(image)
+        }.toResult<String>()
+        emit(response)
+    }
+
+    override fun deleteImage(id: Int): Flow<NetworkResult<String>> = flow {
+        emit(NetworkResult.Loading())
+        val response = httpClient.delete(urlString = "/image/{id?}") {
             parameter("id", id)
         }.toResult<String>()
         emit(response)
