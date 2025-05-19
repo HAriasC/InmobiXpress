@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocationOn
@@ -83,8 +82,8 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     // State variables to manage location information and permission result text
-    var locationText by remember { mutableStateOf("No location obtained :(") }
-    var permissionResultText by remember { mutableStateOf("Permission Granted...") }
+    var locationText by rememberSaveable { mutableStateOf("No location obtained :(") }
+    var permissionResultText by rememberSaveable { mutableStateOf("Permission Granted...") }
 
     val miraflores = LatLng(-12.122512, -77.031388)
     val cameraPositionState = rememberCameraPositionState {
@@ -264,6 +263,7 @@ fun SearchPropertyBar(
     viewModel: MainViewModel,
     id: Int,
     onNavigateToSearch: (id: Int) -> Unit,
+    onRefresh: () -> Unit = {},
     onItemClick: (District) -> Unit
 ) {
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
@@ -294,6 +294,7 @@ fun SearchPropertyBar(
                                     if (viewModel.searchQuery.isNotEmpty()) {
                                         viewModel.onSearchQueryChange("")
                                         viewModel.foundProperties.entries.clear()
+                                        onRefresh()
                                     } else {
                                         expanded = false
                                     }
@@ -418,7 +419,7 @@ fun MapScreenPreview() {
                 )
             )
         ),
-        hostState = remember { SnackbarHostState() },
+        hostState = rememberSaveable { SnackbarHostState() },
         onNavigateToDetail = { },
         onNavigateToSearch = { }
     )

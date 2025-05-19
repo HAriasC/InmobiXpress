@@ -41,10 +41,13 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableFloatState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -78,72 +81,100 @@ import com.google.maps.android.compose.MarkerState
 import com.inmobixpress.inmobixpress.R
 import com.inmobixpress.inmobixpress.data.network.implement.PropertyServiceImpl
 import com.inmobixpress.inmobixpress.repository.PropertyRepository
+import com.inmobixpress.inmobixpress.ui.model.UIState
 import com.inmobixpress.inmobixpress.ui.screens.ContactBar
 import com.inmobixpress.inmobixpress.ui.screens.NearbyMarkers
 import com.inmobixpress.inmobixpress.ui.screens.Phone
 import com.inmobixpress.inmobixpress.ui.screens.RequestBar
 import com.inmobixpress.inmobixpress.ui.theme.PurpleGrey40
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import io.ktor.client.HttpClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactBottomSheet(viewModel: MainViewModel, sheetState: SheetState, property: PropertyItem) {
+fun ContactBottomSheet(
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
+    sheetState: SheetState,
+    property: PropertyItem,
+    onNavigateToLogin: () -> Unit
+) {
     ModalBottomSheet(
         onDismissRequest = {
-            viewModel.onContactBottomSheetVisible(false)
-            viewModel.clearForm()
+            mainViewModel.onLoadingVisible(visible = false)
+            mainViewModel.onContactBottomSheetVisible(visible = false)
+            mainViewModel.clearForm()
         },
         sheetState = sheetState
     ) {
-        val tabIndex by viewModel.tabIndex.observeAsState()
-        val showConfirmDialog by viewModel.confirmDialogVisible.observeAsState()
-        val showRequestDialog by viewModel.requestDialogVisible.observeAsState()
-        val showErrorDialog by viewModel.errorDialogVisible.observeAsState()
-        val showCompleteDialog by viewModel.completeDialogVisible.observeAsState()
-        val showVisitDialog by viewModel.visitDialogVisible.observeAsState()
+        val tabIndex by mainViewModel.tabIndex.observeAsState()
+        val showConfirmDialog by mainViewModel.confirmDialogVisible.observeAsState()
+        val showRequestDialog by mainViewModel.requestDialogVisible.observeAsState()
+        val showErrorDialog by mainViewModel.errorDialogVisible.observeAsState()
+        val showCompleteDialog by mainViewModel.completeDialogVisible.observeAsState()
+        val showVisitDialog by mainViewModel.visitDialogVisible.observeAsState()
+        val request by mainViewModel.insertRequest.collectAsState()
+        val requestXPublishing by mainViewModel.insertRequestXPublishing.collectAsState()
+        var messageError by rememberSaveable { mutableStateOf("") }
         val compositionComplete by rememberLottieComposition(
             spec = LottieCompositionSpec.Url(
-                "https://lottie.host/65fc8803-19e9-40f4-bf32-fd3cef3c1992/SG99vgf37z.json"
+                url = "https://lottie.host/65fc8803-19e9-40f4-bf32-fd3cef3c1992/SG99vgf37z.json"
             )
         )
         val compositionVisit by rememberLottieComposition(
             spec = LottieCompositionSpec.Url(
-                "https://lottie.host/6dd80fd8-d45e-4fce-8817-854359f76bb9/L2dsFnWTGz.json"
+                url = "https://lottie.host/6dd80fd8-d45e-4fce-8817-854359f76bb9/L2dsFnWTGz.json"
             )
         )
         Box(
             modifier = Modifier.fillMaxHeight(),
             contentAlignment = Alignment.BottomEnd
         ) {
-            ContactContainer(viewModel = viewModel, sheetState = sheetState, property = property)
+            ContactContainer(
+                viewModel = mainViewModel,
+                sheetState = sheetState,
+                property = property
+            )
             androidx.compose.animation.AnimatedVisibility(visible = tabIndex == 0) {
-                ContactBar(viewModel = viewModel, property = property, modifier = Modifier.offset {
-                    IntOffset(
-                        x = 0,
-                        y = -sheetState
-                            .requireOffset()
-                            .toInt()
-                    )
-                })
+                ContactBar(
+                    mainViewModel = mainViewModel,
+                    loginViewModel = loginViewModel,
+                    property = property,
+                    modifier = Modifier.offset {
+                        IntOffset(
+                            x = 0,
+                            y = -sheetState
+                                .requireOffset()
+                                .toInt()
+                        )
+                    },
+                    onNavigateToLogin = onNavigateToLogin
+                )
             }
             androidx.compose.animation.AnimatedVisibility(visible = tabIndex == 1) {
-                RequestBar(viewModel = viewModel, property = property, modifier = Modifier.offset {
-                    IntOffset(
-                        x = 0,
-                        y = -sheetState
-                            .requireOffset()
-                            .toInt()
-                    )
-                })
+                RequestBar(
+                    mainViewModel = mainViewModel,
+                    loginViewModel = loginViewModel,
+                    property = property,
+                    modifier = Modifier.offset {
+                        IntOffset(
+                            x = 0,
+                            y = -sheetState
+                                .requireOffset()
+                                .toInt()
+                        )
+                    },
+                    onNavigateToLogin = onNavigateToLogin
+                )
             }
         }
         when {
             showConfirmDialog == true -> {
                 FormAlertDialog(
-                    onDismissRequest = { viewModel.onConfirmDialogVisible(false) },
+                    onDismissRequest = { mainViewModel.onConfirmDialogVisible(false) },
                     onConfirmation = {
-                        viewModel.onConfirmDialogVisible(false)
-                        viewModel.onCompleteDialogVisible(true)
+                        mainViewModel.onConfirmDialogVisible(false)
+                        mainViewModel.onCompleteDialogVisible(true)
                     },
                     dialogTitle = "Información validada",
                     dialogText = "Revisa tus datos antes de enviar el mensaje.",
@@ -155,10 +186,10 @@ fun ContactBottomSheet(viewModel: MainViewModel, sheetState: SheetState, propert
 
             showRequestDialog == true -> {
                 FormAlertDialog(
-                    onDismissRequest = { viewModel.onRequestDialogVisible(false) },
+                    onDismissRequest = { mainViewModel.onRequestDialogVisible(false) },
                     onConfirmation = {
-                        viewModel.onRequestDialogVisible(false)
-                        viewModel.onVisitDialogVisible(true)
+                        mainViewModel.onRequestDialogVisible(false)
+                        mainViewModel.onVisitDialogVisible(true)
                     },
                     dialogTitle = "Información validada",
                     dialogText = "Revisa tus datos antes de solicitar la visita.",
@@ -170,10 +201,12 @@ fun ContactBottomSheet(viewModel: MainViewModel, sheetState: SheetState, propert
 
             showErrorDialog == true -> {
                 FormAlertDialog(
-                    onDismissRequest = { viewModel.onErrorDialogVisible(false) },
-                    onConfirmation = { viewModel.onErrorDialogVisible(false) },
-                    dialogTitle = "Faltan algunos datos",
-                    dialogText = "Completa el formulario correctamente.",
+                    onDismissRequest = { mainViewModel.onErrorDialogVisible(false) },
+                    onConfirmation = { mainViewModel.onErrorDialogVisible(false) },
+                    dialogTitle = if (messageError.isNotEmpty()) "Lo sentimos, ocurrió un error"
+                    else "Faltan algunos datos",
+                    dialogText = if (messageError.isNotEmpty()) messageError
+                    else "Completa el formulario correctamente.",
                     icon = Icons.Default.Info,
                     isError = true,
                     confirmationText = "Entendido"
@@ -184,14 +217,16 @@ fun ContactBottomSheet(viewModel: MainViewModel, sheetState: SheetState, propert
                 DialogWithAnimation(
                     dialogTitle = "¡Su mensaje fue enviado exitosamente!",
                     onDismissRequest = {
-                        viewModel.onCompleteDialogVisible(false)
-                        viewModel.onContactBottomSheetVisible(false)
-                        viewModel.clearForm()
+                        mainViewModel.onLoadingVisible(visible = false)
+                        mainViewModel.onCompleteDialogVisible(visible = false)
+                        mainViewModel.onContactBottomSheetVisible(visible = false)
+                        mainViewModel.clearForm()
                     },
                     onConfirmation = {
-                        viewModel.onCompleteDialogVisible(false)
-                        viewModel.onContactBottomSheetVisible(false)
-                        viewModel.clearForm()
+                        mainViewModel.onLoadingVisible(visible = false)
+                        mainViewModel.onCompleteDialogVisible(visible = false)
+                        mainViewModel.onContactBottomSheetVisible(visible = false)
+                        mainViewModel.clearForm()
                     },
                     composition = compositionComplete,
                     isVisit = false
@@ -202,18 +237,110 @@ fun ContactBottomSheet(viewModel: MainViewModel, sheetState: SheetState, propert
                 DialogWithAnimation(
                     dialogTitle = "¡Su visita fue agendada exitosamente!",
                     onDismissRequest = {
-                        viewModel.onVisitDialogVisible(false)
-                        viewModel.onContactBottomSheetVisible(false)
-                        viewModel.clearForm()
+                        mainViewModel.onLoadingVisible(visible = false)
+                        mainViewModel.onVisitDialogVisible(false)
+                        mainViewModel.onContactBottomSheetVisible(false)
+                        mainViewModel.clearForm()
                     },
                     onConfirmation = {
-                        viewModel.onVisitDialogVisible(false)
-                        viewModel.onContactBottomSheetVisible(false)
-                        viewModel.clearForm()
+                        mainViewModel.onLoadingVisible(visible = false)
+                        mainViewModel.onVisitDialogVisible(false)
+                        mainViewModel.onContactBottomSheetVisible(false)
+                        mainViewModel.clearForm()
                     },
                     composition = compositionVisit,
                     isVisit = true
                 )
+            }
+        }
+
+        when (request) {
+            is UIState.Loading -> {
+                LaunchedEffect(key1 = request) {
+                    Log.e("REQ", "Loading")
+                    mainViewModel.onLoadingVisible(visible = true)
+                }
+            }
+
+            is UIState.Success -> {
+                LaunchedEffect(key1 = request) {
+                    Log.e("REQ", "Success")
+                    val pass = if (mainViewModel.requestType.value == 1) {
+                        mainViewModel.validateFormRefresh()
+                    } else {
+                        mainViewModel.validateRequestRefresh()
+                    }
+                    if (pass) {
+                        val id = (request as UIState.Success<String>).data.split(
+                            "|id:"
+                        )[1].toInt()
+                        Log.e("REQ", "$id $property")
+                        mainViewModel.executeRequestXPublishing(
+                            id = id,
+                            propertyItem = property
+                        )
+                    }
+                }
+            }
+
+            is UIState.Error -> {
+                LaunchedEffect(key1 = request) {
+                    Log.e("REQ", "Error")
+                    messageError = (request as UIState.Error<String>).error.toString()
+                    mainViewModel.onLoadingVisible(visible = false)
+                    mainViewModel.onErrorDialogVisible(visible = true)
+                }
+            }
+
+            is UIState.None -> {
+                LaunchedEffect(key1 = request) {
+                    Log.e("REQ", "None")
+                    mainViewModel.onLoadingVisible(visible = true)
+                }
+            }
+        }
+
+        when (requestXPublishing) {
+            is UIState.Loading -> {
+                Log.e("RxP", "Loading")
+                LaunchedEffect(key1 = requestXPublishing) {
+                    mainViewModel.onLoadingVisible(visible = true)
+                }
+            }
+
+            is UIState.Success -> {
+                LaunchedEffect(key1 = requestXPublishing) {
+                    Log.e("RxP", "Success")
+                    val pass = if (mainViewModel.requestType.value == 1) {
+                        mainViewModel.validateFormRefresh()
+                    } else {
+                        mainViewModel.validateRequestRefresh()
+                    }
+                    if (pass) {
+                        mainViewModel.onLoadingVisible(visible = false)
+                        if (mainViewModel.requestType.value == 1) {
+                            mainViewModel.onCompleteDialogVisible(visible = true)
+                        } else {
+                            mainViewModel.onVisitDialogVisible(visible = true)
+                        }
+                    }
+                }
+            }
+
+            is UIState.Error -> {
+                LaunchedEffect(key1 = requestXPublishing) {
+                    Log.e("RxP", "Error")
+                    messageError = (requestXPublishing as UIState.Error<String>).error.toString()
+                    mainViewModel.onLoadingVisible(visible = false)
+                    mainViewModel.onErrorDialogVisible(visible = true)
+                }
+            }
+
+            is UIState.None -> {
+                Log.e("RxP", "None")
+                LaunchedEffect(key1 = requestXPublishing) {
+                    mainViewModel.onLoadingVisible(visible = true)
+                }
             }
         }
     }
@@ -235,11 +362,16 @@ fun ContactContainer(viewModel: MainViewModel, sheetState: SheetState, property:
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WhatsAppBottomSheet(viewModel: MainViewModel, property: PropertyItem) {
+fun WhatsAppBottomSheet(
+    viewModel: MainViewModel,
+    property: PropertyItem,
+    onNavigateToLogin: () -> Unit
+) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     ModalBottomSheet(
         onDismissRequest = {
+            viewModel.onLoadingVisible(visible = false)
             viewModel.onWhatsAppBottomSheetVisible(false)
             viewModel.clearForm()
         },
@@ -281,13 +413,17 @@ fun WhatsAppBottomSheet(viewModel: MainViewModel, property: PropertyItem) {
                 }
             }
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            WhatsAppBar(viewModel = viewModel, property = property)
+            WhatsAppBar(
+                viewModel = viewModel,
+                property = property,
+                onNavigateToLogin = onNavigateToLogin
+            )
         }
     }
 }
 
 @Composable
-fun WhatsAppBar(viewModel: MainViewModel, property: PropertyItem) {
+fun WhatsAppBar(viewModel: MainViewModel, property: PropertyItem, onNavigateToLogin: () -> Unit) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -307,7 +443,8 @@ fun WhatsAppBar(viewModel: MainViewModel, property: PropertyItem) {
                     viewModel.onWhatsAppBottomSheetVisible(false)
                     viewModel.clearForm()
                 }
-            }) {
+            }
+        ) {
             Icon(
                 imageVector = Icons.Outlined.Whatsapp,
                 contentDescription = "",
@@ -451,7 +588,8 @@ fun WhatsAppBottomSheetPreview() {
                 )
             )
         ),
-        property = previewListProperty()[0]
+        property = previewListProperty()[0],
+        onNavigateToLogin = {}
     )
 }
 

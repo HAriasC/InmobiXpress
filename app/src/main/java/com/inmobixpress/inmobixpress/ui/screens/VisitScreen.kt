@@ -43,8 +43,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +61,7 @@ import com.inmobixpress.inmobixpress.ui.components.DatePickerWithDialog
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.utils.previewListProperty
 import com.inmobixpress.inmobixpress.ui.utils.today
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 
@@ -224,7 +225,7 @@ fun VisitDate(viewModel: MainViewModel, onClick: () -> Unit) {
 @Composable
 fun TimeTable(viewModel: MainViewModel) {
     val timeTable by viewModel.timeTable.observeAsState(initial = viewModel.timeTables()[0])
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {
@@ -264,7 +265,7 @@ fun TimeTable(viewModel: MainViewModel) {
 @Composable
 fun Priority(viewModel: MainViewModel) {
     val priorityType by viewModel.priorityType.observeAsState(initial = viewModel.priotityTypes()[0])
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {
@@ -301,7 +302,13 @@ fun Priority(viewModel: MainViewModel) {
 }
 
 @Composable
-fun RequestBar(viewModel: MainViewModel, property: PropertyItem, modifier: Modifier) {
+fun RequestBar(
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
+    property: PropertyItem,
+    modifier: Modifier,
+    onNavigateToLogin: () -> Unit
+) {
     Column(
         modifier = modifier.background(color = MaterialTheme.colorScheme.inverseOnSurface)
     ) {
@@ -311,7 +318,15 @@ fun RequestBar(viewModel: MainViewModel, property: PropertyItem, modifier: Modif
                     .padding(start = 4.dp)
                     .weight(1.0.toFloat()),
                 onClick = {
-                    viewModel.validateRequest()
+                    if (mainViewModel.user.value == null) {
+                        mainViewModel.onLoadingVisible(visible = false)
+                        onNavigateToLogin()
+                    } else {
+                        if (mainViewModel.validateRequest()) {
+                            mainViewModel.onLoadingVisible(visible = true)
+                            mainViewModel.executeRequest(propertyItem = property)
+                        }
+                    }
                 }) {
                 Icon(
                     imageVector = Icons.Outlined.Today,

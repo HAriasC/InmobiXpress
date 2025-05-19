@@ -14,20 +14,24 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
 import com.inmobixpress.inmobixpress.ui.screens.DetailContainerScreen
 import com.inmobixpress.inmobixpress.ui.screens.HomeScreen
 import com.inmobixpress.inmobixpress.ui.screens.LiveScreen
+import com.inmobixpress.inmobixpress.ui.screens.LoginScreen
 import com.inmobixpress.inmobixpress.ui.screens.MapScreen
 import com.inmobixpress.inmobixpress.ui.screens.ProfileScreen
 import com.inmobixpress.inmobixpress.ui.screens.SearchScreen
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainNavigation(
-    viewModel: MainViewModel,
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
     navController: NavHostController,
     hostState: SnackbarHostState
 ) {
@@ -46,17 +50,21 @@ fun MainNavigation(
             }
         ) {
             HomeScreen(
-                viewModel = viewModel,
+                mainViewModel = mainViewModel,
+                loginViewModel = loginViewModel,
                 onNavigateToDetail = { id ->
                     scope.launch {
-                        viewModel.onVisibleChanged(false)
+                        mainViewModel.onVisibleChanged(false)
                         delay(timeMillis = 300)
-                        viewModel.onVisibleContactBarChanged(true)
+                        mainViewModel.onVisibleContactBarChanged(true)
                         navController.navigate(NavScreen.Detail(id = id))
                     }
                 },
                 onNavigateToSearch = { id ->
                     navController.navigate(NavScreen.Search(id = id))
+                },
+                onNavigateToLogin = {
+                    navController.navigate(NavScreen.Login)
                 }
             )
         }
@@ -73,13 +81,13 @@ fun MainNavigation(
             }
         ) {
             MapScreen(
-                viewModel = viewModel,
+                viewModel = mainViewModel,
                 hostState = hostState,
                 onNavigateToDetail = { id ->
                     scope.launch {
-                        viewModel.onVisibleChanged(false)
+                        mainViewModel.onVisibleChanged(false)
                         delay(timeMillis = 300)
-                        viewModel.onVisibleContactBarChanged(true)
+                        mainViewModel.onVisibleContactBarChanged(true)
                         navController.navigate(NavScreen.Detail(id = id))
                     }
                 },
@@ -102,16 +110,16 @@ fun MainNavigation(
         ) {
             val context = LocalContext.current
             LiveScreen(
-                viewModel = viewModel,
+                viewModel = mainViewModel,
                 hostState = hostState,
                 onNavigateToDetail = { id ->
-                    viewModel.onVisibleChanged(false)
-                    viewModel.onVisibleContactBarChanged(true)
+                    mainViewModel.onVisibleChanged(false)
+                    mainViewModel.onVisibleContactBarChanged(true)
                     navController.navigate(NavScreen.Detail(id = id))
                 },
                 onNavigateBack = {
                     scope.launch {
-                        viewModel.onVisibleChanged(true)
+                        mainViewModel.onVisibleChanged(true)
                         delay(timeMillis = 200)
                         navController.navigateUp()
                     }
@@ -169,16 +177,41 @@ fun MainNavigation(
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<NavScreen.Detail>()
             DetailContainerScreen(
-                viewModel = viewModel,
+                mainViewModel = mainViewModel,
+                loginViewModel = loginViewModel,
                 id = args.id,
+                onNavigateToLogin ={
+                    navController.navigate(NavScreen.Login)
+                },
                 onNavigateBack = {
                     scope.launch {
-                        viewModel.onVisibleContactBarChanged(false)
+                        mainViewModel.onVisibleContactBarChanged(false)
                         delay(timeMillis = 200)
-                        viewModel.onVisibleChanged(true)
+                        mainViewModel.onVisibleChanged(true)
                         delay(timeMillis = 200)
                         navController.navigateUp()
                     }
+                }
+            )
+        }
+        composable<NavScreen.Login>(
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            },
+            popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }
+        ) {
+            LoginScreen(
+                viewModel = loginViewModel,
+                onNavigateToMain = { user ->
+                    loginViewModel.onUserChanged(user = user)
+                    mainViewModel.onUserChanged(user = user)
+                    navController.navigateUp()
                 }
             )
         }

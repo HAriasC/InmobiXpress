@@ -23,32 +23,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.autoSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.inmobixpress.inmobixpress.data.network.implement.LoginServiceImpl
 import com.inmobixpress.inmobixpress.data.network.implement.PropertyServiceImpl
+import com.inmobixpress.inmobixpress.repository.LoginRepository
 import com.inmobixpress.inmobixpress.repository.PropertyRepository
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
 import com.inmobixpress.inmobixpress.ui.components.BottomBar
 import com.inmobixpress.inmobixpress.ui.components.LoadingScreen
 import com.inmobixpress.inmobixpress.ui.navigation.MainNavigation
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import io.ktor.client.HttpClient
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel,
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
     navController: NavHostController = rememberNavController(),
 ) {
     val context = LocalContext.current as Activity
     val snackBarHostState = remember { SnackbarHostState() }
-    val showLoading by viewModel.loadingVisible.observeAsState(initial = true)
+    val showLoading by mainViewModel.loadingVisible.observeAsState(initial = true)
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.displayCutout),
-        bottomBar = { BottomBar(viewModel, navController = navController) },
+        bottomBar = { BottomBar(mainViewModel, navController = navController) },
         snackbarHost = {
             SnackbarHost(hostState = snackBarHostState) { data ->
                 Snackbar(
@@ -76,7 +82,8 @@ fun MainScreen(
                 .fillMaxSize()
         ) {
             MainNavigation(
-                viewModel = viewModel,
+                mainViewModel = mainViewModel,
+                loginViewModel = loginViewModel,
                 hostState = snackBarHostState,
                 navController = navController
             )
@@ -96,9 +103,16 @@ fun MainScreen(
 @Composable
 fun MainScreenPreview() {
     MainScreen(
-        viewModel = MainViewModel(
+        mainViewModel = MainViewModel(
             PropertyRepository(
                 PropertyServiceImpl(
+                    HttpClient()
+                )
+            )
+        ),
+        loginViewModel = LoginViewModel(
+            LoginRepository(
+                LoginServiceImpl(
                     HttpClient()
                 )
             )

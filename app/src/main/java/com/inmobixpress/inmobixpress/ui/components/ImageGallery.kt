@@ -1,7 +1,5 @@
 package com.inmobixpress.inmobixpress.ui.components
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,15 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 
 @Composable
 fun ImageGallery(imageList: List<String>) {
@@ -79,23 +72,16 @@ fun ImageGallery(imageList: List<String>) {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImagePagerItem(image: String) {
-    val context = LocalContext.current
-    val sizeResolver = rememberConstraintsSizeResolver()
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalPlatformContext.current)
-            .data(data = image)
-            .size(resolver = sizeResolver)
-            .build(),
-    )
     Box {
-        Image(
+        GlideImage(
+            model = image,
+            contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp).then(other = sizeResolver),
-            painter = painter,
-            contentDescription = "",
+                .height(250.dp),
             contentScale = ContentScale.Crop
         )
     }

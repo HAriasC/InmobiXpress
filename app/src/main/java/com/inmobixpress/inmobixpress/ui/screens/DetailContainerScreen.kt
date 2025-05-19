@@ -40,12 +40,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.libraries.places.api.Places
+import com.inmobixpress.inmobixpress.data.network.implement.LoginServiceImpl
 import com.inmobixpress.inmobixpress.data.network.implement.PropertyServiceImpl
+import com.inmobixpress.inmobixpress.repository.LoginRepository
 import com.inmobixpress.inmobixpress.repository.PropertyRepository
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
 import com.inmobixpress.inmobixpress.ui.components.ContactBottomSheet
@@ -55,23 +58,26 @@ import com.inmobixpress.inmobixpress.ui.components.WhatsAppBottomSheet
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.utils.callProprietor
 import com.inmobixpress.inmobixpress.ui.utils.previewDetailTabList
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailContainerScreen(
-    viewModel: MainViewModel,
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
     id: Int,
+    onNavigateToLogin: () -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    val visible: Boolean by viewModel.contactBottomBarVisible.observeAsState(true)
+    val visible: Boolean by mainViewModel.contactBottomBarVisible.observeAsState(true)
 
     BackPressHandler(onBackPressed = onNavigateBack)
-    val properties by viewModel.propertyItems.observeAsState(emptyMap())
+    val properties by mainViewModel.propertyItems.observeAsState(emptyMap())
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val showWhatsAppBottomSheet by viewModel.whatsappBottomSheetVisible.observeAsState()
-    val showContactBottomSheet by viewModel.contactBottomSheetVisible.observeAsState()
+    val showWhatsAppBottomSheet by mainViewModel.whatsappBottomSheetVisible.observeAsState()
+    val showContactBottomSheet by mainViewModel.contactBottomSheetVisible.observeAsState()
     Scaffold(
         topBar = {
             TopBar(
@@ -88,7 +94,7 @@ fun DetailContainerScreen(
                 exit = slideOutVertically(targetOffsetY = { it }),
             ) {
                 ContactBottomBar(
-                    viewModel = viewModel,
+                    viewModel = mainViewModel,
                     sheetState = sheetState,
                     property = properties[id]!!
                 )
@@ -104,28 +110,31 @@ fun DetailContainerScreen(
                 .fillMaxSize()
         ) {
             CustomTab(
-                viewModel = viewModel,
+                viewModel = mainViewModel,
                 items = previewDetailTabList(
-                    viewModel = viewModel,
+                    viewModel = mainViewModel,
                     property = properties[id]!!
                 ),
                 modifier = Modifier.padding(vertical = 10.dp)
             ) {
-                viewModel.serviceMarkers.clear()
+                mainViewModel.serviceMarkers.clear()
                 Places.deinitialize()
             }
         }
         if (showWhatsAppBottomSheet == true) {
             WhatsAppBottomSheet(
-                viewModel = viewModel,
-                property = properties[id]!!
+                viewModel = mainViewModel,
+                property = properties[id]!!,
+                onNavigateToLogin = onNavigateToLogin
             )
         }
         if (showContactBottomSheet == true) {
             ContactBottomSheet(
-                viewModel = viewModel,
+                mainViewModel = mainViewModel,
+                loginViewModel = loginViewModel,
                 sheetState = sheetState,
-                property = properties[id]!!
+                property = properties[id]!!,
+                onNavigateToLogin = onNavigateToLogin
             )
         }
     }
@@ -213,13 +222,22 @@ fun BackPressHandler(
 @Composable
 fun DetailContainerScreenPreview() {
     DetailContainerScreen(
-        viewModel = MainViewModel(
+        mainViewModel = MainViewModel(
             PropertyRepository(
                 PropertyServiceImpl(
                     HttpClient()
                 )
             )
         ),
-        id = 0
-    ) { }
+        loginViewModel = LoginViewModel(
+            LoginRepository(
+                LoginServiceImpl(
+                    HttpClient()
+                )
+            )
+        ),
+        id = 0,
+        onNavigateToLogin = {},
+        onNavigateBack = {}
+    )
 }

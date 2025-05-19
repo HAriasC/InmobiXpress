@@ -1,7 +1,6 @@
 package com.inmobixpress.inmobixpress.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.outlined.SquareFoot
 import androidx.compose.material.icons.outlined.Whatsapp
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,19 +38,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter
-import coil3.compose.LocalPlatformContext
-import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.utils.bathroomFormat
 import com.inmobixpress.inmobixpress.ui.utils.callProprietor
 import com.inmobixpress.inmobixpress.ui.utils.previewListProperty
 import com.inmobixpress.inmobixpress.ui.utils.priceFormat
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemCard(
     property: PropertyItem,
@@ -61,13 +55,6 @@ fun ItemCard(
     onContactClick: (property: PropertyItem) -> Unit
 ) {
     val context = LocalContext.current
-    val sizeResolver = rememberConstraintsSizeResolver()
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalPlatformContext.current)
-            .data(data = property.images[0])
-            .size(resolver = sizeResolver)
-            .build(),
-    )
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -79,22 +66,13 @@ fun ItemCard(
     ) {
         Column {
             Box {
-                Image(
+                GlideImage(
+                    model = property.images[0],
+                    contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    painter = painter,
-                    contentDescription = "",
                     contentScale = ContentScale.Crop
-                )
-                AsyncImage(
-                    model = ImageRequest.Builder(context = context)
-                        .data(data = property.images[0])
-                        .crossfade(enable = true)
-                        .build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().height(height = 200.dp)
                 )
                 OutlinedIconButton(
                     modifier = Modifier
@@ -200,7 +178,7 @@ fun ItemCard(
                 Text(
                     text = property.description,
                     fontSize = 11.sp,
-                    color = Color.DarkGray,
+                    color = Color.Gray,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
                 Row(modifier = Modifier.padding(top = 8.dp)) {

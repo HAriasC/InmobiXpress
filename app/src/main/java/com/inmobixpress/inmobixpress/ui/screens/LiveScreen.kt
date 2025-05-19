@@ -32,8 +32,8 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -73,8 +73,8 @@ fun LiveScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var permissionGranted by remember { mutableStateOf(false) }
-    var enableAR by remember { mutableStateOf(false) }
+    var permissionGranted by rememberSaveable { mutableStateOf(false) }
+    var enableAR by rememberSaveable { mutableStateOf(false) }
     val sessionAR by viewModel.sessionAR.observeAsState()
     var geoRenderer: GeoRenderer? = null
     val showTrackerBottomSheet by viewModel.trackerBottomSheetVisible.observeAsState()
@@ -85,8 +85,8 @@ fun LiveScreen(
         ).tilt(cameraTilt).build()
     }
     val markerState = rememberMarkerState()
-    var enableMap by remember { mutableStateOf(false) }
-    val rotationMarker = remember { mutableFloatStateOf(0.0f) }
+    var enableMap by rememberSaveable { mutableStateOf(false) }
+    val rotationMarker = rememberSaveable { mutableFloatStateOf(0.0f) }
 
     BackPressHandler(onBackPressed = onNavigateBack)
     RequestGeoPermission(
@@ -313,7 +313,7 @@ fun LiveScreenPreview() {
                 )
             )
         ),
-        hostState = remember { SnackbarHostState() },
+        hostState = rememberSaveable { SnackbarHostState() },
         onNavigateToDetail = { },
         onNavigateBack = { }
     )

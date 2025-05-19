@@ -28,7 +28,7 @@ identity = "18.1.0"
 auth = "21.3.0"
 location = "21.3.0"
 gms = "4.4.2"
-arcore = "1.46.0"
+arcore = "1.47.0"
 sceneview = "2.2.1"
 javagl = "0.4.0"
 permissions = "0.35.0-alpha"
@@ -37,6 +37,7 @@ ktor = "3.0.0"
 firebaseMessaging = "24.1.0"
 storage = "21.0.1"
 coil = "3.0.4"
+glide = "1.0.0-beta01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -92,6 +93,7 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "storage"}
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil"}
+glide-compose = { module = "com.github.bumptech.glide:compose", version.ref = "glide"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

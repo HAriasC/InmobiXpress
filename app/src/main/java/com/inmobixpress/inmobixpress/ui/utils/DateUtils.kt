@@ -69,7 +69,7 @@ fun validateDayOfWeek(millis: Long): Boolean = if (Build.VERSION.SDK_INT >= Buil
         )
         .toLocalDate()
         .dayOfWeek
-    dayOfWeek != DayOfWeek.SUNDAY && convertMillisToLocalDate(millis.plus(hourToMillis(hours = 5))).isAfter(
+    dayOfWeek != DayOfWeek.SATURDAY && convertMillisToLocalDate(millis.plus(hourToMillis(hours = 5))).isAfter(
         convertMillisToLocalDate(System.currentTimeMillis())
     ) || convertMillisToLocalDate(millis.plus(hourToMillis(hours = 5))).dayOfMonth == convertMillisToLocalDate(
         System.currentTimeMillis()

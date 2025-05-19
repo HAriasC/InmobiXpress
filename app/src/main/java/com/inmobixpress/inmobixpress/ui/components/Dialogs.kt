@@ -1,11 +1,14 @@
 package com.inmobixpress.inmobixpress.ui.components
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,10 +46,12 @@ import com.inmobixpress.inmobixpress.repository.PropertyRepository
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
 import com.inmobixpress.inmobixpress.ui.utils.dateToString
 import com.inmobixpress.inmobixpress.ui.utils.hourToMillis
+import com.inmobixpress.inmobixpress.ui.utils.millisToLocalDateTime
 import com.inmobixpress.inmobixpress.ui.utils.today
 import com.inmobixpress.inmobixpress.ui.utils.validateDayOfWeek
 import com.inmobixpress.inmobixpress.ui.utils.year
 import io.ktor.client.HttpClient
+import kotlinx.datetime.toKotlinLocalDateTime
 
 @Composable
 fun FormAlertDialog(
@@ -187,6 +192,18 @@ fun DatePickerWithDialog(
             Button(
                 onClick = {
                     viewModel.onVisitDayChanged(dateToString)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        viewModel.onVisitLocalChanged(
+                            visitLocal = dateState.selectedDateMillis?.plus(hourToMillis(hours = 5))
+                                .millisToLocalDateTime()
+                                .toKotlinLocalDateTime()
+                        )
+                        viewModel.onVisitMillisChanged(
+                            visitMillis = dateState.selectedDateMillis!!.plus(
+                                hourToMillis(hours = 5)
+                            )
+                        )
+                    }
                     onConfirmation()
                 }
             ) {
@@ -206,6 +223,55 @@ fun DatePickerWithDialog(
             showModeToggle = true
         )
     }
+}
+
+@Composable
+fun MessageDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+    isError: Boolean,
+    confirmationText: String,
+) {
+    AlertDialog(
+        icon = {
+            Icon(
+                imageVector = icon, contentDescription = "", modifier = Modifier
+                    .size(60.dp)
+                    .fillMaxSize(1.0F)
+            )
+        },
+        title = {
+            Text(text = dialogTitle, fontSize = 20.sp)
+        },
+        text = {
+            Text(text = dialogText, textAlign = TextAlign.Center)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            if (isError) {
+                TextButton(
+                    onClick = {
+                        onDismissRequest()
+                    }
+                ) {
+                    Text(text = confirmationText)
+                }
+            } else {
+                TextButton(
+                    onClick = {
+                        onConfirmation()
+                    }
+                ) {
+                    Text(text = confirmationText)
+                }
+            }
+        }
+    )
 }
 
 @Preview

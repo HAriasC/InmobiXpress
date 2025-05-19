@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
     implementation(libs.coil.compose)
+    implementation(libs.glide.compose)
     implementation(libs.google.places)
     implementation(libs.play.services.base)
     implementation(libs.play.services.identity)

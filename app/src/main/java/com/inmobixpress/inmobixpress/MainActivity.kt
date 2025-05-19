@@ -21,13 +21,15 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.inmobixpress.inmobixpress.ui.screens.MainScreen
 import com.inmobixpress.inmobixpress.ui.theme.InmobiXpressAppTheme
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -50,7 +52,7 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
             InmobiXpressAppTheme {
-                MainScreen(viewModel)
+                MainScreen(mainViewModel = mainViewModel, loginViewModel = loginViewModel)
             }
         }
     }

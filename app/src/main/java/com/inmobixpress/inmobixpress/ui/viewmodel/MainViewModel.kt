@@ -1,6 +1,8 @@
 package com.inmobixpress.inmobixpress.ui.viewmodel
 
+import android.os.Build
 import android.util.Patterns
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +19,12 @@ import com.inmobixpress.inmobixpress.data.network.model.Device
 import com.inmobixpress.inmobixpress.data.network.model.Image
 import com.inmobixpress.inmobixpress.data.network.model.Property
 import com.inmobixpress.inmobixpress.data.network.model.PropertyHasOfferType
+import com.inmobixpress.inmobixpress.data.network.model.Publishing
+import com.inmobixpress.inmobixpress.data.network.model.Request
+import com.inmobixpress.inmobixpress.data.network.model.RequestHasPublishing
+import com.inmobixpress.inmobixpress.data.network.model.RequestState
+import com.inmobixpress.inmobixpress.data.network.model.RequestType
+import com.inmobixpress.inmobixpress.data.network.model.User
 import com.inmobixpress.inmobixpress.repository.PropertyRepository
 import com.inmobixpress.inmobixpress.ui.model.AnchorItem
 import com.inmobixpress.inmobixpress.ui.model.District
@@ -24,6 +32,8 @@ import com.inmobixpress.inmobixpress.ui.model.FilterType
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.model.ServiceMarker
 import com.inmobixpress.inmobixpress.ui.model.UIState
+import com.inmobixpress.inmobixpress.ui.utils.hourToMillis
+import com.inmobixpress.inmobixpress.ui.utils.millisToLocalDateTime
 import com.inmobixpress.inmobixpress.ui.utils.today
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -39,6 +49,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -137,6 +149,12 @@ class MainViewModel @Inject constructor(
     private val _visitDay = MutableLiveData<String>(today())
     val visitDay: LiveData<String> = _visitDay
 
+    private val _visitLocal = MutableLiveData<LocalDateTime>()
+    val visitLocal: LiveData<LocalDateTime> = _visitLocal
+
+    private val _visitMillis = MutableLiveData<Long>()
+    val visitMillis: LiveData<Long> = _visitMillis
+
     private val _timeTable = MutableLiveData<String>()
     val timeTable: LiveData<String> = _timeTable
 
@@ -151,6 +169,9 @@ class MainViewModel @Inject constructor(
 
     private val _districts = MutableLiveData<List<District>>(emptyList())
     val districts: LiveData<List<District>> = _districts
+
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User> = _user
 
     private val dist = flow {
         while (true) emit(districts.value!!)
@@ -191,8 +212,23 @@ class MainViewModel @Inject constructor(
     private val _images = MutableStateFlow<UIState<List<Image>>>(UIState.Loading())
     val images = _images.asStateFlow()
 
+    private val _publishing = MutableStateFlow<UIState<List<Publishing>>>(UIState.Loading())
+    val publishing = _publishing.asStateFlow()
+
+    private val _publishingItems = MutableLiveData<Map<Int, Publishing>>()
+    val publishingItems: LiveData<Map<Int, Publishing>> = _publishingItems
+
     private val _propertyItems = MutableLiveData<Map<Int, PropertyItem>>()
     val propertyItems: LiveData<Map<Int, PropertyItem>> = _propertyItems
+
+    private val _insertRequest = MutableStateFlow<UIState<String>>(UIState.None())
+    val insertRequest = _insertRequest.asStateFlow()
+
+    private val _insertRequestXPublishing = MutableStateFlow<UIState<String>>(UIState.None())
+    val insertRequestXPublishing = _insertRequestXPublishing.asStateFlow()
+
+    private val _requestType = MutableLiveData<Int>(1)
+    val requestType: LiveData<Int> = _requestType
 
     fun onLoadingVisible(visible: Boolean) {
         _loadingVisible.value = visible
@@ -333,6 +369,14 @@ class MainViewModel @Inject constructor(
         _visitDay.value = visitDay
     }
 
+    fun onVisitMillisChanged(visitMillis: Long) {
+        _visitMillis.value = visitMillis
+    }
+
+    fun onVisitLocalChanged(visitLocal: LocalDateTime) {
+        _visitLocal.value = visitLocal
+    }
+
     fun onTimeTableChanged(timeTable: String) {
         _timeTable.value = timeTable
     }
@@ -351,6 +395,14 @@ class MainViewModel @Inject constructor(
 
     fun onDistrictChanged(districts: List<District>) {
         _districts.value = districts
+    }
+
+    fun onPublishingItemsChanged(publishingItems: Map<Int, Publishing>) {
+        _publishingItems.value = publishingItems
+    }
+
+    fun onUserChanged(user: User) {
+        _user.value = user
     }
 
     fun validateName(): Boolean {
@@ -417,7 +469,7 @@ class MainViewModel @Inject constructor(
 
     fun validateForm(): Boolean {
         if (validateName() && validateEmail() && validatePhone() && validateDNI() && validateMessage()) {
-            _completeDialogVisible.value = true
+            _requestType.postValue(1)
             return true
         } else {
             _errorDialogVisible.value = true
@@ -427,6 +479,7 @@ class MainViewModel @Inject constructor(
 
     fun validateWhatsApp(): Boolean {
         if (validatePhone() && validateMessage()) {
+            _requestType.postValue(0)
             return true
         } else {
             _errorDialogVisible.value = true
@@ -436,10 +489,29 @@ class MainViewModel @Inject constructor(
 
     fun validateRequest(): Boolean {
         if (validateName() && validateEmail() && validatePhone() && validateDNI()) {
-            _visitDialogVisible.value = true
+            _requestType.postValue(2)
             return true
         } else {
             _errorDialogVisible.value = true
+            return false
+        }
+
+    }
+
+    fun validateFormRefresh(): Boolean {
+        if (validateName() && validateEmail() && validatePhone() && validateDNI() && validateMessage()) {
+            _requestType.postValue(1)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fun validateRequestRefresh(): Boolean {
+        if (validateName() && validateEmail() && validatePhone() && validateDNI()) {
+            _requestType.postValue(2)
+            return true
+        } else {
             return false
         }
 
@@ -507,6 +579,110 @@ class MainViewModel @Inject constructor(
                     initialValue = UIState.Loading()
                 ).collect { _images.value = it }
         }
+    }
+
+    fun loadPublishing() {
+        viewModelScope.launch {
+            repository.loadPublishing()
+                .map { it }
+                .flowOn(dispatcher)
+                .catch {
+                    _publishing.value = UIState.Error(error = it)
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000),
+                    initialValue = UIState.Loading()
+                ).collect { _publishing.value = it }
+        }
+    }
+
+    fun executeRequest(propertyItem: PropertyItem) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerRequest(request = getRequest(propertyItem = propertyItem))
+        }
+    }
+
+    fun executeRequestXPublishing(id: Int, propertyItem: PropertyItem) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerRequestXPublishing(
+                requestHasPublishing = RequestHasPublishing(
+                    request = getRequest(id = id, propertyItem = propertyItem),
+                    publishing = _publishingItems.value?.get(key = propertyItem.id)!!,
+                    createDate = System.currentTimeMillis().millisToLocalDateTime()
+                        .toKotlinLocalDateTime()
+                )
+            )
+        }
+    }
+
+    fun registerRequest(request: Request) {
+        viewModelScope.launch {
+            repository.registerRequest(request = request)
+                .map { it }
+                .flowOn(dispatcher)
+                .catch {
+                    _insertRequest.value = UIState.Error(error = it)
+                }
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000),
+                    UIState.Loading()
+                ).collect { _insertRequest.value = it }
+        }
+    }
+
+    fun registerRequestXPublishing(requestHasPublishing: RequestHasPublishing) {
+        viewModelScope.launch {
+            repository.registerRequestXPublishing(requestHasPublishing = requestHasPublishing)
+                .map { it }
+                .flowOn(dispatcher)
+                .catch {
+                    _insertRequestXPublishing.value = UIState.Error(error = it)
+                }
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(stopTimeoutMillis = 10000),
+                    UIState.Loading()
+                ).collect { _insertRequestXPublishing.value = it }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getRequest(id: Int = 0, propertyItem: PropertyItem) = Request(
+        id = id,
+        date = getVisitDate(),
+        message = if (_requestType.value == 1) _message.value.toString()
+        else "Solicitud de visita para el inmueble en ${propertyItem.district.name}.",
+        requestType = if (_requestType.value == 2) RequestType(
+            id = 2, name = "Visita"
+        ) else RequestType(
+            id = 1,
+            name = "Consulta"
+        ),
+        requestState = RequestState(id = 1, name = "Solicitado"),
+        user = _user.value!!
+    )
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getVisitDate(): LocalDateTime {
+        val date = _visitMillis.value ?: System.currentTimeMillis()
+        val index = timeTables().indexOf(_timeTable.value)
+        return when (index) {
+            0 -> date.plus(hourToMillis(hours = 8))
+            1 -> date.plus(hourToMillis(hours = 9))
+            2 -> date.plus(hourToMillis(hours = 10))
+            3 -> date.plus(hourToMillis(hours = 11))
+            4 -> date.plus(hourToMillis(hours = 12))
+            5 -> date.plus(hourToMillis(hours = 13))
+            6 -> date.plus(hourToMillis(hours = 14))
+            7 -> date.plus(hourToMillis(hours = 15))
+            8 -> date.plus(hourToMillis(hours = 16))
+            9 -> date.plus(hourToMillis(hours = 17))
+            10 -> date.plus(hourToMillis(hours = 18))
+            11 -> date.plus(hourToMillis(hours = 19))
+            else -> date.plus(hourToMillis(hours = 8))
+        }.millisToLocalDateTime().toKotlinLocalDateTime()
     }
 
     fun clearForm() {

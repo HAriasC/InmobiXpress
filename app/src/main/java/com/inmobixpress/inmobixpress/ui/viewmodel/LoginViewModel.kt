@@ -55,6 +55,9 @@ class LoginViewModel @Inject constructor(
     private val _result = MutableStateFlow<UIState<User>>(None())
     val result = _result.asStateFlow()
 
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User> = _user
+
     fun onLoadingVisible(visible: Boolean) {
         _loadingVisible.value = visible
     }
@@ -69,6 +72,10 @@ class LoginViewModel @Inject constructor(
 
     fun onPasswordChanged(password: String) {
         _password.value = password
+    }
+
+    fun onUserChanged(user: User) {
+        _user.value = user
     }
 
     fun validateUsername(): Boolean {

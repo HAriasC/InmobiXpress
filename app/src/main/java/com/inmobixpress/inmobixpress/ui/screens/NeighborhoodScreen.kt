@@ -28,7 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -73,14 +73,14 @@ fun NeighborhoodScreen(viewModel: MainViewModel, property: PropertyItem) {
         property.location.latitude,
         property.location.longitude
     )
-    var streetViewResult by remember { mutableStateOf(Status.NOT_FOUND) }
+    var streetViewResult by rememberSaveable { mutableStateOf(Status.NOT_FOUND) }
     val camera = rememberStreetViewCameraPositionState()
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(latLng, 18f)
     }
     val markerState = rememberMarkerState(position = latLng)
-    val dragged = remember { mutableStateOf(false) }
-    val rotationMarker = remember { mutableFloatStateOf(0.0f) }
+    val dragged = rememberSaveable { mutableStateOf(false) }
+    val rotationMarker = rememberSaveable { mutableFloatStateOf(0.0f) }
     LaunchedEffect(cameraPositionState, camera, markerState) {
         launch {
             snapshotFlow { camera.panoramaCamera }

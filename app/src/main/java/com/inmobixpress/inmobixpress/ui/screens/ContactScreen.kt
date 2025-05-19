@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,6 +53,7 @@ import com.inmobixpress.inmobixpress.repository.PropertyRepository
 import com.inmobixpress.inmobixpress.ui.viewmodel.MainViewModel
 import com.inmobixpress.inmobixpress.ui.model.PropertyItem
 import com.inmobixpress.inmobixpress.ui.utils.previewListProperty
+import com.inmobixpress.inmobixpress.ui.viewmodel.LoginViewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 
@@ -63,6 +65,7 @@ fun ContactScreen(viewModel: MainViewModel, sheetState: SheetState, property: Pr
     val keyboardController = LocalSoftwareKeyboardController.current
     val isVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val scrollState = rememberScrollState()
+    val properties by viewModel.properties.collectAsState()
     LaunchedEffect(isVisible) {
         if (isVisible) {
             sheetState.expand()
@@ -344,7 +347,13 @@ fun Message(viewModel: MainViewModel, onValueChange: (Int) -> Unit, onFocusChang
 }
 
 @Composable
-fun ContactBar(viewModel: MainViewModel, property: PropertyItem, modifier: Modifier) {
+fun ContactBar(
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
+    property: PropertyItem,
+    modifier: Modifier,
+    onNavigateToLogin: () -> Unit
+) {
     Column(
         modifier = modifier.background(color = MaterialTheme.colorScheme.inverseOnSurface)
     ) {
@@ -353,7 +362,15 @@ fun ContactBar(viewModel: MainViewModel, property: PropertyItem, modifier: Modif
                 .fillMaxWidth()
                 .padding(8.dp),
             onClick = {
-                viewModel.validateForm()
+                if (mainViewModel.user.value == null) {
+                    mainViewModel.onLoadingVisible(visible = false)
+                    onNavigateToLogin()
+                } else {
+                    if (mainViewModel.validateForm()) {
+                        mainViewModel.onLoadingVisible(visible = true)
+                        mainViewModel.executeRequest(propertyItem = property)
+                    }
+                }
             }) {
             Icon(
                 imageVector = Icons.Outlined.Email,

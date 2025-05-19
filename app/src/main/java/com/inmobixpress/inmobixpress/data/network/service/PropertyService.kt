@@ -12,6 +12,9 @@ import com.inmobixpress.inmobixpress.data.network.model.PropertyHasOfferType
 import com.inmobixpress.inmobixpress.data.network.model.PropertyState
 import com.inmobixpress.inmobixpress.data.network.model.PropertyType
 import com.inmobixpress.inmobixpress.data.network.model.Province
+import com.inmobixpress.inmobixpress.data.network.model.Publishing
+import com.inmobixpress.inmobixpress.data.network.model.Request
+import com.inmobixpress.inmobixpress.data.network.model.RequestHasPublishing
 import kotlinx.coroutines.flow.Flow
 
 interface PropertyService {
@@ -88,4 +91,30 @@ interface PropertyService {
     fun registerImage(image: Image): Flow<NetworkResult<String>>
     fun updateImage(id: Int, image: Image): Flow<NetworkResult<String>>
     fun deleteImage(id: Int): Flow<NetworkResult<String>>
+
+    fun loadRequests(): Flow<NetworkResult<List<Request>>>
+    fun loadRequest(id: Int): Flow<NetworkResult<Request>>
+    fun registerRequest(request: Request): Flow<NetworkResult<String>>
+    fun updateRequest(id: Int, request: Request): Flow<NetworkResult<String>>
+    fun deleteRequest(id: Int): Flow<NetworkResult<String>>
+
+    fun loadPublishing(): Flow<NetworkResult<List<Publishing>>>
+    fun loadPublishing(id: Int): Flow<NetworkResult<Publishing>>
+    fun registerPublishing(publishing: Publishing): Flow<NetworkResult<String>>
+    fun updatePublishing(id: Int, publishing: Publishing): Flow<NetworkResult<String>>
+    fun deletePublishing(id: Int): Flow<NetworkResult<String>>
+
+    fun loadRequestsXPublishing(): Flow<NetworkResult<List<RequestHasPublishing>>>
+    fun loadRequestXPublishing(rId: Int, pId: Int): Flow<NetworkResult<RequestHasPublishing>>
+    fun registerRequestXPublishing(
+        requestHasPublishing: RequestHasPublishing,
+    ): Flow<NetworkResult<String>>
+
+    fun updateRequestXPublishing(
+        rId: Int,
+        pId: Int,
+        requestHasPublishing: RequestHasPublishing,
+    ): Flow<NetworkResult<String>>
+
+    fun deleteRequestXPublishing(rId: Int, pId: Int): Flow<NetworkResult<String>>
 }
